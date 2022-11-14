@@ -1,3 +1,8 @@
+/*
+	Roaring Dungeon roguelike game.
+	Author: https://github.com/RedHopper
+*/
+
 #include<iostream>
 #include<glad/glad.h>
 #include<GLFW/glfw3.h>
