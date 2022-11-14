@@ -1,6 +1,6 @@
 /*
- This header file contatins other essential functions that are being used
- to compile main file.
+ This header file contatins other essential functions that are used
+ in main file.
  */
 
 struct slime_params
