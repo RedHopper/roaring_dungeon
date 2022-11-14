@@ -23,6 +23,6 @@ Your main goal is to fight with different monsters appearing on your way out. Fo
 * **Slime** - moves in one direction. Avoids other slimes and bounds. Exchanges it's position with bats and chests. Can be killed by moving right in it's face. Destroys chest if boosted.
 * **Bat** - moves diagonally. Unlike slime can share it's position with the chest. Though bats are no friend to you, it won't attack if there are other free positions. If no free cell is present - dies.
 
-**Boost** will move any entity to the cell its facing. Boosted entity has advantage over cell's host. It's direction is changed clockwise when used. Avoids facing boundaries.
+**Boost** will move any entity to the cell its facing. Boosted entity has advantage over cell's host. It's direction is changed clockwise when encountered. Avoids facing boundaries.
 # How to compile
 g++ main.cpp glad.c -o roaring_dungeon -lglfw3 -lGL -lX11 -ldl -lpthread
