@@ -1,0 +1,1 @@
+g++ main.cpp glad.c -o roaring_dungeon -lglfw3 -lGL -lX11 -ldl -lpthread
