@@ -2285,7 +2285,6 @@ int main()
 	glm::vec3 light_pos{0.0f, 1.0f, 1.0f};
 	glm::vec3 light_color{1.0f, 1.0f, 1.0f};
 
-	flex_shader triangle_shader{"shaders/basic.vs", "shaders/basic.fs"};	
 	constexpr float moving_step{133.0f};
 	constexpr float tile_scale{12.6f};
 	int curr_morder{0};
