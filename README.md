@@ -11,7 +11,7 @@ The game is developed in C++ using GLFW window manager, Glad loader, GLM math li
 
 **GLM mathematics library** is used for matrix operations, projection matrix creation, all in-game transformations (scaling, moving, rotating).
 
-**flex_shader class** has been created with the purpose of automating GLSL shader compilation routines and setting of GLSL unifroms.
+**flex_shader class** has been created with the purpose of automating GLSL shader compilation routines and accessing GLSL unifroms.
 
 **npc_handle class** has been designed for creating NPCs, player and other game objects and defining interactions between each other. Child function *draw* controlls all NPC behaviours, and also creates *render_object* and pushes it to the render vector (whch is then passed to the *render_handle* function, where it's sorted and eventually rendered).
 
