@@ -318,6 +318,7 @@ class npc_handle
 		}
 		float new_pos_time{};
 		float death_time{};
+		bool debug_mode{};
 	private:
 		int last_grid_pos{};
 		bool is_npc{};
@@ -2212,11 +2213,14 @@ void display_dead(glm::vec3 pos, npc_handle* npc_player, unsigned int skeleton_t
 			int last_high_score{read_high_score("high_score.txt")};
 			player_params& p_params{*reinterpret_cast<player_params*>(npc_player->params)};
 			int curr_score{p_params.score};
-			if (curr_score > last_high_score)
+			if (curr_score > last_high_score && !npc_player->debug_mode)
 			{
 				std::cout << "New high score: " << curr_score << "!\n";
 				simple_write("high_score.txt", std::to_string(curr_score));
 				render_hs = true;
+			} else if (npc_player->debug_mode)
+			{
+				std::cout << "[I] Score is not being recorded; You are in the debug mode\n";
 			}
 			
 			last_death_time = npc_player->death_time;
@@ -2228,9 +2232,20 @@ void display_dead(glm::vec3 pos, npc_handle* npc_player, unsigned int skeleton_t
 	} else render_hs = false;
 }
 
-
-int main()
+int index_argv(std::string arg, const char** argv, int argv_size)
 {
+	for (int i{}; i < argv_size; ++i)
+	{
+		std::string curr_arg{argv[i]};
+		if (arg == curr_arg) return i;
+	}
+	return -1;
+}
+
+int main(const int argc, const char** argv)
+{
+	const bool debug_mode{index_argv("-d", argv, argc)};
+	if (debug_mode) std::cout << "[!] Debug mode is on.\n";
 	srand(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 	rand();
 	glfwInit();
@@ -2341,6 +2356,7 @@ int main()
 	npc_player.shader_level = npc_handle::shader_texture;
 	npc_player.gl_texture = gen_texture("./textures/player.png");
 	npc_player.lock_tex_rot = true;
+	npc_player.debug_mode = debug_mode;
 
 	npc_handle npc_slime{npc_handle::rand_pos, VAO, true, moving_step, &all_handles, &max_morder, &rinfo, &all_shaders, &map_grid, "slime_npc"};
 	npc_slime.window = window;
@@ -2480,7 +2496,6 @@ int main()
 
 		leditor.process(grid_color, g_scr_size);
 
-		//if (c_handle.render) rinfo.push_back(&c_handle.square_obj);
 		npc_player.draw(m_projection);
 		npc_slime.draw(m_projection);
 		npc_slime2.draw(m_projection);
