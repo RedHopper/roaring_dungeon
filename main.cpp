@@ -2244,8 +2244,8 @@ int index_argv(std::string arg, const char** argv, int argv_size)
 
 int main(const int argc, const char** argv)
 {
-	const int debug_mode{index_argv("-d", argv, argc)};
-	if (debug_mode != -1) std::cout << "[!] Debug mode is on.\n";
+	const bool debug_mode{index_argv("-d", argv, argc) != -1};
+	if (debug_mode) std::cout << "[!] Debug mode is on.\n";
 	srand(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 	rand();
 	glfwInit();
