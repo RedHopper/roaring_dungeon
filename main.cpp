@@ -1039,12 +1039,12 @@ void npc_handle::draw(const glm::mat4& m_projection)
 		{
 			target_pos = curr_pos;
 			target_pos[0] += moving_step;
-			if (vec3_scale[0] < 0) vec3_scale[0] *= -1.0f;
+			vec3_scale[0] = abs(vec3_scale[0]);
 		} else if (key_dir == 'l')
 		{
 			target_pos = curr_pos;
 			target_pos[0] -= moving_step;
-			if (vec3_scale[0] > 0) vec3_scale[0] *= -1.0f;
+			vec3_scale[0] = -abs(vec3_scale[0]);
 		} else if (key_dir == 'd')
 		{
 			target_pos = curr_pos;
@@ -1068,7 +1068,7 @@ void npc_handle::draw(const glm::mat4& m_projection)
 			target_pos = curr_pos + td::dir_to_vec(lb_info.direction, moving_step);
 			moving_vec = target_pos - curr_pos;
 			moving_dir = td::mvec_to_dir(moving_vec);
-			if (moving_dir == 'r' && vec3_scale[0] < 0.0f) vec3_scale[0] *= -1.0f;
+			vec3_scale[0] = abs(vec3_scale[0]) * (moving_dir=='l' ? -1.0f : 1.0f);
 			new_pos_time = glfwGetTime();
 			lb_info.direction = 0;
 		}
@@ -1112,10 +1112,7 @@ void npc_handle::draw(const glm::mat4& m_projection)
 			npc_boost->moving_dir = td::turn_dir(npc_boost->moving_dir);
 			while (!pos_on_grid(npc_boost->curr_pos + td::dir_to_vec(npc_boost->moving_dir, moving_step), 0.1f)) npc_boost->moving_dir = td::turn_dir(npc_boost->moving_dir);
 			boosted = true;
-			if (npc_type == "player" && boosted)
-			{
-				if (moving_dir == 'r' && vec3_scale[0] < 0.0f) vec3_scale[0] *= -1.0f;
-			}
+			if (npc_type == "player") vec3_scale[0] = abs(vec3_scale[0]) * (moving_dir == 'l' ? -1.0f : 1.0f); 
 		} 
 		end_move();	
 		//std::cout << "Ended move for: " << name << "; will increase order: " << (!boosted && !reset_this_turn) << "\n"; //Debug

@@ -167,9 +167,9 @@ bool vec3_equal(const glm::vec3& vec1, const glm::vec3& vec2, float error = 0.00
 	return true;
 }
 
-bool float_equal(const float f1, const float f2)
+bool float_equal(const float f1, const float f2, const float error = 0.00001f)
 {
-	if (abs(f1-f2) > 0.00001f)
+	if (abs(f1-f2) > error)
 	{
 		return false;
 	}
