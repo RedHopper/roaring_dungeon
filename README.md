@@ -13,7 +13,7 @@ The game is developed in C++ using GLFW window manager, Glad loader, GLM math li
 
 **flex_shader class** has been created with the purpose of automating GLSL shader compilation routines and accessing GLSL unifroms.
 
-**npc_handle class** has been designed for creating NPCs, player and other game objects and defining interactions between each other. Child function *draw* controlls all NPC behaviours, and also creates *render_object* and pushes it to the render vector (whch is then passed to the *render_handle* function, where it's sorted and eventually rendered).
+**npc_handle class** has been designed for creating NPCs, player and other game objects and defining interactions between each other. Child function *draw* controlls all NPCs behaviour, and also creates *render_object* and pushes it to the render vector (whch is then passed to the *render_handle* function, where it's sorted and eventually rendered).
 
 Only single VAO (Vertex Array Object) is used for all game's graphics.
 
@@ -23,6 +23,6 @@ Game's main goal is to fight different monsters appearing on your way out. For e
 * **Slime** - moves in one direction. Avoids other slimes and bounds. Exchanges it's position with bats and chests. Can be killed by moving in front of it. Destroys chest if boosted.
 * **Bat** - moves diagonally. Unlike slime can share it's position with the chest. Though bats are no friend to you, it won't attack if there are other free positions. If no free cell is present it dies.
 
-**Boost** will move any creature to the cell its facing. Boosted creature has advantage over cell's host. It's direction is changed clockwise when encountered. Avoids facing boundaries.
+* **Boost** will move any creature to the cell its facing. Boosted creature has advantage over cell's host. It's direction is changed clockwise when encountered. Avoids facing boundaries.
 # How to compile
 g++ main.cpp glad.c -o roaring_dungeon -lglfw3 -lGL -lX11 -ldl -lpthread
