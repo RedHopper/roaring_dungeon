@@ -15,7 +15,7 @@
 #include<algorithm>
 #include"foo.h"
 #define STB_IMAGE_IMPLEMENTATION
-#include"stb_image.h"
+#include"other_libs/stb_image.h"
 
 glm::vec3 v3_dumm{0.0f, 0.0f, 0.0f};
 constexpr float dumm_limit_max{1.0f};
@@ -1920,51 +1920,6 @@ public:
 		if (found != last_a_keys.end()) return true;
 		return false;
 	}
-	void update_vec(const float delta_time)
-	{
-		auto found{std::find(active_keys.begin(), active_keys.end(), 'a')};
-		auto found_last{std::find(last_a_keys.begin(), last_a_keys.end(), 'e')};
-		if (found != active_keys.end())
-		{
-			vec3[0] -= speed * delta_time;
-		}
-		found = std::find(active_keys.begin(), active_keys.end(), 'd');
-		if (found != active_keys.end())
-		{
-			vec3[0] += speed * delta_time;
-		}
-		found = std::find(active_keys.begin(), active_keys.end(), 'w');
-		if (found != active_keys.end())
-		{
-			vec3[1] += speed * delta_time;
-		}
-		found = std::find(active_keys.begin(), active_keys.end(), 's');
-		if (found != active_keys.end())
-		{
-			vec3[1] -= speed * delta_time;
-		}
-		found = std::find(active_keys.begin(), active_keys.end(), 't');
-		if (found != active_keys.end())
-		{
-			vec3[2] += z_speed * delta_time;
-		}
-		found = std::find(active_keys.begin(), active_keys.end(), 'g');
-		if (found != active_keys.end())
-		{
-			vec3[2] -= z_speed * delta_time;
-		}
-		if (get_state('e') && !get_last_state('e'))
-		{
-			render = !render;
-			std::cout << "Render is now ";
-			if (render) std::cout << "enabled\n";
-			else std::cout << "disabled\n";
-		}
-		if (render)
-		{
-			square_obj.pos = vec3;
-		}
-	}
 };
 
 class level_editor
@@ -2242,7 +2197,7 @@ int index_argv(std::string arg, const char** argv, int argv_size)
 int main(const int argc, const char** argv)
 {
 	const bool debug_mode{index_argv("-d", argv, argc) != -1};
-	if (debug_mode) std::cout << "[!] Debug mode is on.\n";
+	if (debug_mode) std::cout << "[I] Debug mode is on.\n";
 	srand(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 	rand();
 	glfwInit();
@@ -2477,9 +2432,6 @@ int main(const int argc, const char** argv)
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		m_handle.update_state();
 		c_handle.update_state();
-		c_handle.update_vec(delta_time);
-		if (m_handle.lm_pressed) std::cout << "mouse pos: " << m_handle.n_xpos << " " << m_handle.n_ypos << "\n";
-		if (m_handle.lm_pressed) std::cout << "mouse fixed pos: " << m_handle.get_coords_str() << "\n";
 		input_handle(ih_vars);
 
 
