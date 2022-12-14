@@ -25,4 +25,4 @@ Game's main goal is to fight different monsters appearing on your way out. For e
 
 * **Boost** will move any creature to the cell its facing. Boosted creature has advantage over cell's host. It's direction is changed clockwise when encountered. Avoids facing boundaries.
 # How to compile
-g++ main.cpp other_libs/glad.c -o roaring_dungeon -lglfw3 -lGL -lX11 -ldl -lpthread
+`g++ main.cpp other_libs/glad.c -o roaring_dungeon -lglfw3 -lGL -lX11 -ldl -lpthread`
