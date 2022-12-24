@@ -1,0 +1,1 @@
+/usr/bin/c++ -rdynamic CMakeFiles/roaring_dungeon.dir/src/main.cpp.o CMakeFiles/roaring_dungeon.dir/src/other_libs/glad.c.o -o roaring_dungeon  /usr/local/lib/libglfw3.a -lOpenGL -Wl,-Bstatic -lrt -Wl,-Bdynamic -lm -ldl 

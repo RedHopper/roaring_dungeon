@@ -25,4 +25,13 @@ Game's main goal is to fight different monsters appearing on your way out. For e
 
 * **Boost** will move any creature to the cell its facing. Boosted creature has advantage over cell's host. It's direction is changed clockwise when encountered. Avoids facing boundaries.
 # How to compile
-g++ main.cpp glad.c -o roaring_dungeon -lglfw3 -lGL -lX11 -ldl -lpthread
+### With cmake CLI
+1. Generate cmake build files:
+'''
+	cmake -S . -B build
+'''
+2. cd into build folder and actually build project:
+'''
+	cd build ; cmake --build .
+'''
+3. Copy resulted **roaring_dungion** executable file into root folder. It is needed to provide the executalbe with all texture and shader files

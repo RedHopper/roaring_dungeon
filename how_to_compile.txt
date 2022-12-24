@@ -1,1 +1,7 @@
-g++ main.cpp other_libs/glad.c -o roaring_dungeon -lglfw3 -lGL -lX11 -ldl -lpthread
+In order to compile the Roaring Dungeon game follow these steps:
+1. Create a build folder in root directory using cmake CLI:
+	# cmake -S . -B build
+2. cd into build folder and actually build project:
+	# cd build ; cmake --build .
+3. Copy resulted roaring_dungion executable file into root folder. It is needed to provide executalbe with all texture and shader files
+4. Enjoy!
