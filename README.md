@@ -8,7 +8,6 @@ The game is developed in C++ using GLFW window manager, Glad loader, GLM math li
 * Low-level: no game engines nor pre-written game libraries are being used. 
 * RAM and CPU efficient. Most of the heavy variables are declared once and accessed by pointers if possible.
 
-
 **GLM mathematics library** is used for matrix operations, projection matrix creation, all in-game transformations (scaling, moving, rotating).
 
 **flex_shader class** has been created with the purpose of automating GLSL shader compilation routines and accessing GLSL unifroms.
@@ -17,7 +16,7 @@ The game is developed in C++ using GLFW window manager, Glad loader, GLM math li
 
 Only single VAO (Vertex Array Object) is used for all game's graphics.
 
-Game score is recorded and compared with the score in *high_score.txt* file on player's death. If new high score has been set, it shows corresponding message in game window and overwrites file's value.
+Game score is recorded and compared with the score in *high_score.txt* file on player's death. If new high score has been set, it shows corresponding message in game window and overwrites file's value. 
 # Gameplay review
 Game's main goal is to fight different monsters appearing on your way out. For each defeted monster you gain coins. Also don't forget to loot chests! Once you are done fighting the portal opens and you can move on to the next level. All monsters follow these rules:
 * **Slime** - moves in one direction. Avoids other slimes and bounds. Exchanges it's position with bats and chests. Can be killed by moving in front of it. Destroys chest if boosted.
@@ -27,11 +26,11 @@ Game's main goal is to fight different monsters appearing on your way out. For e
 # How to compile
 ### With cmake CLI
 1. Generate cmake build files:
-'''
-	cmake -S . -B build
-'''
+```
+cmake -S . -B build
+```
 2. cd into build folder and actually build project:
-'''
-	cd build ; cmake --build .
-'''
+```
+cd build ; cmake --build .
+```
 3. Copy resulted **roaring_dungion** executable file into root folder. It is needed to provide the executalbe with all texture and shader files
