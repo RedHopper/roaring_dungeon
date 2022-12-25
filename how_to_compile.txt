@@ -5,3 +5,6 @@ In order to compile the Roaring Dungeon game follow these steps:
 	# cd build ; cmake --build .
 3. Copy resulted roaring_dungion executable file into root folder. It is needed to provide executalbe with all texture and shader files
 4. Enjoy!
+
+One line command for Linux:
+# cmake -S . -B build ; cmake --build build ; mv build/roaring_dungeon ./

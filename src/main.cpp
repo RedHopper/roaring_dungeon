@@ -250,6 +250,7 @@ class npc_handle
 		glm::vec3 start_fade_local_pos{fade_local_pos};
 		int shader_level{shader_flat};
 		bool moving_no_order{};
+		bool player_is_moving{};
 		void turn_till_on_grid(bool clock_wise = true, bool ignore_player = true)
 		{
 			if ((npc_type == "player" && ignore_player) || !map_grid->size()) return;
@@ -433,13 +434,13 @@ void npc_handle::end_move() //end of move
 		for (int i{}; i < all_handles->size(); ++i)
 		{
 			npc_handle& curr_handle{*all_handles->at(i)};
-			if (curr_handle.is_dead || !vec3_equal(curr_handle.curr_pos, curr_pos, 0.1f) || &curr_handle == this) continue;
+			if (curr_handle.is_dead || !vec3_equal(curr_handle.curr_pos, curr_pos, 0.0001f) || &curr_handle == this) continue;
 			if (curr_handle.npc_type  == "player")
 			{
 				curr_handle.is_dead = true;
 				curr_handle.death_time = glfwGetTime();
 				//std::cout << "Player was killed by npc with name: " << name << "\n"; //Debug
-			} else if (curr_handle.npc_type == "chest")
+			} else if (curr_handle.npc_type == "chest" && boosted_before)
 			{
 				curr_handle.is_dead = true;
 				//std::cout << "Chest " << curr_handle.name << "  was destroyed by slime: " << name << "\n"; //Debug
@@ -457,7 +458,7 @@ void npc_handle::end_move() //end of move
 		}
 		std::string obstacles{"slime, grid, bat"};
 		if (pos_taken(facing_pos, obstacles, 3.0f) && !boosted ){
-			bool clock_wise{rand()%2};
+			bool clock_wise{static_cast<bool>(rand()%2)};
 			turn_till_on_grid(clock_wise);
 		}
 		return;
@@ -1033,13 +1034,15 @@ void npc_handle::draw(const glm::mat4& m_projection)
 		lb_info.direction = key_dir;
 		lb_info.set_time = glfwGetTime();
 	}
-	if (key_dir != 0 && vec3_equal(curr_pos, target_pos) && last_key_dir == 0 && *curr_morder == moving_order && !is_npc && !is_dead) //Player handle
+	if (key_dir != 0 && vec3_equal(curr_pos, target_pos) && last_key_dir == 0 && *curr_morder == moving_order && npc_type == "player" && !is_dead) //Player handle
 	{
+		player_is_moving = true;
 		if(key_dir == 'r')
 		{
 			target_pos = curr_pos;
 			target_pos[0] += moving_step;
 			vec3_scale[0] = abs(vec3_scale[0]);
+			
 		} else if (key_dir == 'l')
 		{
 			target_pos = curr_pos;
@@ -1053,7 +1056,7 @@ void npc_handle::draw(const glm::mat4& m_projection)
 		{
 			target_pos = curr_pos;
 			target_pos[1] += moving_step;
-		}
+		} else player_is_moving = false;
 		moving_vec = target_pos - curr_pos;
 		moving_dir = td::mvec_to_dir(moving_vec);
 		new_pos_time = glfwGetTime();
@@ -1065,6 +1068,7 @@ void npc_handle::draw(const glm::mat4& m_projection)
 		} else if (lb_info.direction != 0)
 		{
 			//std::cout << "Early move\n";
+			player_is_moving = true;
 			target_pos = curr_pos + td::dir_to_vec(lb_info.direction, moving_step);
 			moving_vec = target_pos - curr_pos;
 			moving_dir = td::mvec_to_dir(moving_vec);
@@ -1073,7 +1077,7 @@ void npc_handle::draw(const glm::mat4& m_projection)
 			lb_info.direction = 0;
 		}
 	} 
-	else if ( is_npc && moving_order == *curr_morder && vec3_equal(curr_pos, target_pos, 0.01f) && !is_dead ) // Generating new target position for all npc handles
+	else if ( is_npc && moving_order == *curr_morder && vec3_equal(curr_pos, target_pos, 0.01f) && !is_dead ) // Generating new target position for all npc handles except player
 	{
 		type_behaviour();
 		if (vec3_equal(curr_pos, target_pos)) 
@@ -1089,21 +1093,22 @@ void npc_handle::draw(const glm::mat4& m_projection)
 	{
 		float change{static_cast<float>(glfwGetTime()) - new_pos_time};
 		curr_pos += (change*change + change)*0.7f * moving_vec;
-		//npc_moved = vec_moved(curr_pos, target_pos, moving_vec);
-	} 
-	else if ( npc_moved && !vec3_equal(curr_pos, last_pos, 0.00000001f) && vec3_equal(curr_pos, target_pos, 0.000000001f) && npc_type != "boost" && *curr_morder == moving_order && !z_pos_switch)
+		std::cout << "Moving " << name << "\n";
+	}
+	else if ( npc_moved && !vec3_equal(curr_pos, last_pos, 0.1f) && vec3_equal(curr_pos, target_pos, 0.000001f) && npc_type != "boost" && *curr_morder == moving_order && !z_pos_switch || (npc_type == "player" && npc_moved && player_is_moving))
 	{
+		player_is_moving = false;
+		std::cout << "Finally moved " << name << "\n";
 		curr_pos = target_pos;
 		if (!pos_on_grid(curr_pos, 0.1f))
 		{
-		 	//std::cout << "Npc with name " << name << " was killed by bounds\n"; //Debug
 			death_time = glfwGetTime();
 			is_dead = true;
 		}
 		boosted_before = boosted;
 		boosted = false;
 		npc_handle* npc_boost{get_handle_by_name("npc_boost")};
-		if (vec3_equal(curr_pos, npc_boost->curr_pos, 1.0f) && !boosted_before && !boosted)
+		if (vec3_equal(curr_pos, npc_boost->curr_pos, 0.001f) && !boosted_before && !boosted)
 		{
 			target_pos = target_pos + td::dir_to_vec(npc_boost->moving_dir, moving_step);
 			moving_vec = target_pos - curr_pos;
@@ -1113,10 +1118,15 @@ void npc_handle::draw(const glm::mat4& m_projection)
 			while (!pos_on_grid(npc_boost->curr_pos + td::dir_to_vec(npc_boost->moving_dir, moving_step), 0.1f)) npc_boost->moving_dir = td::turn_dir(npc_boost->moving_dir);
 			boosted = true;
 			if (npc_type == "player") vec3_scale[0] = abs(vec3_scale[0]) * (moving_dir == 'l' ? -1.0f : 1.0f); 
+			player_is_moving = true;
 		} 
-		end_move();	
-		//std::cout << "Ended move for: " << name << "; will increase order: " << (!boosted && !reset_this_turn) << "\n"; //Debug
-		if (!boosted && !reset_this_turn) inc_order();
+		end_move();
+		std::cout << "Ended move for: " << name << "; will increase order: " << (!boosted && !reset_this_turn) << "\n"; //Debug
+		if (!boosted && !reset_this_turn) 
+		{
+			inc_order();
+			target_pos = curr_pos;
+		}
 		else if (reset_this_turn) reset_this_turn = false;
 	}
 	if (z_pos_switch && vec3_equal(curr_pos, target_pos)) z_pos_switch = 0.0f;
