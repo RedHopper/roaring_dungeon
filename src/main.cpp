@@ -170,6 +170,7 @@ class flex_shader
 class npc_handle
 {
 	public:
+		bool behaviour_generated{};
 		std::string name;		
 		int grid_pos{};
 		float scale{1.0f};
@@ -503,6 +504,7 @@ void npc_handle::reset(bool reset_score = false)
 	for (int i{}; i < all_handles -> size(); ++i)
 	{
 		npc_handle& curr_handle{*all_handles->at(i)};
+		curr_handle.behaviour_generated = false;
 		curr_handle.gen_rand_pos(true);
 		curr_handle.moving_dir = td::rand_dir(rand());
 		curr_handle.target_pos = curr_handle.curr_pos;
@@ -549,6 +551,7 @@ void npc_handle::reset(bool reset_score = false)
 
 void npc_handle::inc_order() //function increases order and if order is more than maximum one, it decreases it
 {
+	behaviour_generated = false;
 	if (!curr_morder || !max_morder)
 	{
 		std::cerr << "[*]Error: npc_handle::inc_order() - curr_morder or/and max_morder pointers are not set\n";
@@ -1057,6 +1060,7 @@ void npc_handle::draw(const glm::mat4& m_projection)
 			target_pos = curr_pos;
 			target_pos[1] += moving_step;
 		} else player_is_moving = false;
+		if (player_is_moving) behaviour_generated = true;
 		moving_vec = target_pos - curr_pos;
 		moving_dir = td::mvec_to_dir(moving_vec);
 		new_pos_time = glfwGetTime();
@@ -1077,9 +1081,11 @@ void npc_handle::draw(const glm::mat4& m_projection)
 			lb_info.direction = 0;
 		}
 	} 
-	else if ( is_npc && moving_order == *curr_morder && vec3_equal(curr_pos, target_pos, 0.01f) && !is_dead ) // Generating new target position for all npc handles except player
+	else if ( is_npc && moving_order == *curr_morder && vec3_equal(curr_pos, target_pos, 0.01f) && !is_dead && vec3_equal(last_pos, curr_pos, 0.0000001f) && !behaviour_generated) // Generating new target position for all npc handles except player
 	{
+		//std::cout << "Moving " << name << "; curr_morder: " << *curr_morder << "\n";
 		type_behaviour();
+		behaviour_generated = true;
 		if (vec3_equal(curr_pos, target_pos)) 
 		{
 			inc_order();
@@ -1093,12 +1099,11 @@ void npc_handle::draw(const glm::mat4& m_projection)
 	{
 		float change{static_cast<float>(glfwGetTime()) - new_pos_time};
 		curr_pos += (change*change + change)*0.7f * moving_vec;
-		std::cout << "Moving " << name << "\n";
 	}
-	else if ( npc_moved && !vec3_equal(curr_pos, last_pos, 0.1f) && vec3_equal(curr_pos, target_pos, 0.000001f) && npc_type != "boost" && *curr_morder == moving_order && !z_pos_switch || (npc_type == "player" && npc_moved && player_is_moving))
+	else if ( npc_moved && !vec3_equal(curr_pos, last_pos, 0.1f) && vec3_equal(curr_pos, target_pos, 0.000001f) && npc_type != "boost" && *curr_morder == moving_order && !z_pos_switch || (npc_type == "player" && player_is_moving) )
 	{
 		player_is_moving = false;
-		std::cout << "Finally moved " << name << "\n";
+		//std::cout << "Finally moved " << name << "\n";
 		curr_pos = target_pos;
 		if (!pos_on_grid(curr_pos, 0.1f))
 		{
@@ -1108,7 +1113,7 @@ void npc_handle::draw(const glm::mat4& m_projection)
 		boosted_before = boosted;
 		boosted = false;
 		npc_handle* npc_boost{get_handle_by_name("npc_boost")};
-		if (vec3_equal(curr_pos, npc_boost->curr_pos, 0.001f) && !boosted_before && !boosted)
+		if (vec3_equal(curr_pos, npc_boost->curr_pos, 2.0f) && behaviour_generated)
 		{
 			target_pos = target_pos + td::dir_to_vec(npc_boost->moving_dir, moving_step);
 			moving_vec = target_pos - curr_pos;
@@ -1121,7 +1126,7 @@ void npc_handle::draw(const glm::mat4& m_projection)
 			player_is_moving = true;
 		} 
 		end_move();
-		std::cout << "Ended move for: " << name << "; will increase order: " << (!boosted && !reset_this_turn) << "\n"; //Debug
+		//std::cout << "Ended move for: " << name << "; will increase order: " << (!boosted && !reset_this_turn) << "\n"; //Debug
 		if (!boosted && !reset_this_turn) 
 		{
 			inc_order();
@@ -1140,6 +1145,7 @@ void npc_handle::draw(const glm::mat4& m_projection)
 			turn_till_on_grid(rand()%2);
 		}
 	}
+	if (behaviour_generated && vec3_equal(curr_pos, target_pos, 0.00001f) && vec3_equal(curr_pos, last_pos, 0.00001f) && !boosted && !boosted_before) inc_order();
 
 	npc_handle& npc_portal{*get_handle_by_name("npc_portal")};
 	if (npc_portal.is_dead)
