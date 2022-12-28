@@ -1113,7 +1113,7 @@ void npc_handle::draw(const glm::mat4& m_projection)
 		boosted_before = boosted;
 		boosted = false;
 		npc_handle* npc_boost{get_handle_by_name("npc_boost")};
-		if (vec3_equal(curr_pos, npc_boost->curr_pos, 2.0f) && behaviour_generated)
+		if (vec3_equal(curr_pos, npc_boost->curr_pos, 5.0f) && behaviour_generated)
 		{
 			target_pos = target_pos + td::dir_to_vec(npc_boost->moving_dir, moving_step);
 			moving_vec = target_pos - curr_pos;
